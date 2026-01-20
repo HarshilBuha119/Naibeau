@@ -62,7 +62,7 @@ export default function RegisterScreen({ navigation }) {
         onSuccess: () => setShowOtp(true),
         onError: err =>
           Alert.alert('Failed', err.message || 'Unable to send OTP'),
-      }
+      },
     );
   };
 
@@ -87,9 +87,12 @@ export default function RegisterScreen({ navigation }) {
               mobile: userData.mobile,
               email: userData.email,
               profile_pic: userData.profile_pic,
-              role: userData.role,
+              referral_code: userData.referral_code, // ADDED
+              total_bookings: userData.total_bookings, // ADDED
+              role: userData.role.name, // FIXED: Accessing .name because role is an object
               is_completed_profile: userData.is_completed_profile,
               is_kyc_verified: userData.is_kyc_verified,
+              gender: userData.gender, // ADDED
             },
           });
 
@@ -98,15 +101,18 @@ export default function RegisterScreen({ navigation }) {
             routes: [{ name: 'MainTabs' }],
           });
         },
-        onError: err =>
-          Alert.alert('Failed', err.message || 'Invalid OTP'),
-      }
+        onError: err => Alert.alert('Failed', err.message || 'Invalid OTP'),
+      },
     );
   };
 
   return (
     <View style={{ flex: 1, backgroundColor: colors.background }}>
-      <StatusBar translucent backgroundColor="transparent" barStyle="dark-content" />
+      <StatusBar
+        translucent
+        backgroundColor="transparent"
+        barStyle="dark-content"
+      />
 
       {/* BACKGROUND BLOBS */}
       <View style={styles.blobTop} />
@@ -118,7 +124,6 @@ export default function RegisterScreen({ navigation }) {
           behavior={Platform.OS === 'ios' ? 'padding' : undefined}
         >
           <View style={styles.container}>
-
             {/* BRAND */}
             <View style={styles.brand}>
               <Text style={styles.logo}>
@@ -188,7 +193,6 @@ export default function RegisterScreen({ navigation }) {
                 Already have an account? <Text style={styles.link}>Login</Text>
               </Text>
             </TouchableOpacity>
-
           </View>
         </KeyboardAvoidingView>
       </SafeAreaView>
@@ -260,7 +264,7 @@ const styles = StyleSheet.create({
     marginTop: 50,
     marginBottom: 50,
     marginHorizontal: 50,
-    alignItems:"center",
+    alignItems: 'center',
   },
   otpBox: {
     width: 60,
@@ -268,11 +272,11 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 12,
     borderColor: colors.textMuted,
-    textAlign:"center",
+    textAlign: 'center',
     fontSize: 28,
     fontWeight: '600',
     color: colors.text,
-    marginHorizontal:10
+    marginHorizontal: 10,
   },
 
   footerText: {

@@ -61,7 +61,7 @@ export default function ServicesScreen() {
       </Animated.View>
 
       <Text style={styles.sectionTitle}>Explore Categories</Text>
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.categoryContent}>
+      <ScrollView bounces={false}  horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.categoryContent}>
         {subcategories.map((item, index) => (
           <Animated.View key={item.category_id} entering={FadeInRight.delay(300 + (index * 100))}>
             <CategoryItem
@@ -78,7 +78,6 @@ export default function ServicesScreen() {
 
       <View style={styles.sectionHeader}>
         <Text style={styles.sectionTitle}>Top Rated Partners</Text>
-        <TouchableOpacity><Text style={styles.viewAll}>See All</Text></TouchableOpacity>
       </View>
     </>
   );
@@ -96,7 +95,7 @@ export default function ServicesScreen() {
             <Text style={{ color: colors.primary }}>beau</Text>
           </Text>
         </Animated.View>
-        <TouchableOpacity style={styles.profileBtn}>
+        <TouchableOpacity style={styles.profileBtn} onPress={()=>navigation.navigate("Profile")}>
           <Ionicons name="person" size={20} color={colors.primary} />
         </TouchableOpacity>
       </View>

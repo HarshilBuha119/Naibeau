@@ -7,42 +7,84 @@ import {
   TouchableOpacity,
   Platform,
   ActivityIndicator,
+  Alert,
 } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import colors from '../theme/colors';
-import { useAddToCart } from '../api/cartApi'; 
+import { useAddToCart, useCart } from '../api/cartApi';
 
 export default function ServiceCard({ item }) {
+  // Destructure with fallbacks for flat or nested data
   const { service, partner, final_price, price, off, avg_service_rating } = item;
 
+  // Hooks
+  const { data: cartResponse } = useCart(); // Get current cart state
   const { mutate: addToCart, isPending } = useAddToCart();
+
+  // 1. Data Mapping: Ensure we have a valid ID and Title regardless of API structure
+  const currentServiceId = service?.service_id || item.service_id || item.id;
+  const displayTitle = service?.name || item.service_name || item.name;
+  const displayCategory = service?.category?.name || item.category_name || 'SERVICE';
 
   const image =
     item.product?.images?.[0] ||
     service?.image ||
+    item.service_image ||
     'https://via.placeholder.com/400x400.png?text=Service';
 
-  const rating = Number(avg_service_rating || 0).toFixed(1);
+  const rating = Number(avg_service_rating || item.rating || 0).toFixed(1);
   const hasDiscount = Number(off) > 0;
 
+  /* -------- ADD TO CART LOGIC -------- */
   const handleAddToCart = () => {
+    if (!currentServiceId) {
+      Alert.alert('Error', 'Service ID not found');
+      return;
+    }
+
+    // 2. LOGIC: Check if item already exists in the current cart
+    const existingItems = cartResponse?.data?.dataCart || [];
+    const isAlreadyInCart = existingItems.some(
+      cartItem => cartItem.service_id === currentServiceId
+    );
+
+    if (isAlreadyInCart) {
+      Alert.alert('Already Added', 'This service is already in your cart.');
+      return;
+    }
+
+    // 3. LOGIC: Handle is_replace (Replacement logic)
+    // If cart has a different partner_id than the current service's partner
+    const cartPartnerId = cartResponse?.data?.masterCart?.partner_id;
+    const currentPartnerId = partner?.user_id || item.partner_id;
+
+    // If cart is NOT empty AND the partner is different, we must replace
+    const shouldReplace = cartPartnerId && currentPartnerId && cartPartnerId !== currentPartnerId;
+
     const payload = {
-      is_replace: true, 
-      service_id: service?.service_id || item.service_id,
+      is_replace: !!shouldReplace, 
+      service_id: currentServiceId,
     };
 
     addToCart(payload, {
-      onSuccess: (data) => {
-        console.log('Successfully added to cart:', data);
+      onSuccess: data => {
+        Alert.alert('Success', 'Added to cart successfully!');
+        console.log('Successfully added:', data);
       },
-      onError: (error) => {
-        console.error('Error adding to cart:', error);
+      onError: error => {
+        console.error('Error Status:', error.response?.status);
+        console.error('Error Body:', error.response?.data);
+        Alert.alert(
+          'Cart Error',
+          error.response?.data?.message || 'Unable to add item to cart'
+        );
       },
     });
   };
 
   return (
     <TouchableOpacity activeOpacity={0.9} style={styles.card}>
+      {/* LEFT: Image Section */}
       <View style={styles.imageContainer}>
         <Image source={{ uri: image }} style={styles.image} />
         {hasDiscount && (
@@ -56,28 +98,23 @@ export default function ServiceCard({ item }) {
         </View>
       </View>
 
+      {/* RIGHT: Content Section */}
       <View style={styles.rightContent}>
         <View>
-          <Text style={styles.categoryText}>
-            {service?.category?.name?.toUpperCase() || 'SERVICE'}
-          </Text>
+          <Text style={styles.categoryText}>{displayCategory.toUpperCase()}</Text>
           <Text style={styles.title} numberOfLines={2}>
-            {service?.name}
+            {displayTitle}
           </Text>
 
           <View style={styles.infoRow}>
             <View style={styles.metaBadge}>
               <Ionicons name="time-outline" size={12} color={colors.textMuted} />
-              <Text style={styles.metaText}>{service?.display_time}</Text>
+              <Text style={styles.metaText}>{service?.display_time || item.duration || '15 min'}</Text>
             </View>
             <View style={[styles.metaBadge, { marginLeft: 8 }]}>
-              <Ionicons
-                name="shield-checkmark-outline"
-                size={12}
-                color={colors.primary}
-              />
+              <Ionicons name="shield-checkmark-outline" size={12} color={colors.primary} />
               <Text style={styles.metaText} numberOfLines={1}>
-                {partner?.name}
+                {partner?.name || item.partner_name || 'Professional'}
               </Text>
             </View>
           </View>
@@ -85,8 +122,8 @@ export default function ServiceCard({ item }) {
 
         <View style={styles.footer}>
           <View>
-            <Text style={styles.finalPrice}>₹{final_price}</Text>
-            {hasDiscount && <Text style={styles.oldPrice}>₹{price}</Text>}
+            <Text style={styles.finalPrice}>₹{final_price || item.service_final_price}</Text>
+            {hasDiscount && <Text style={styles.oldPrice}>₹{price || item.original_price}</Text>}
           </View>
 
           <TouchableOpacity
@@ -127,9 +164,7 @@ const styles = StyleSheet.create({
       android: { elevation: 4 },
     }),
   },
-  imageContainer: {
-    position: 'relative',
-  },
+  imageContainer: { position: 'relative' },
   image: {
     width: 115,
     height: 140,
@@ -177,11 +212,7 @@ const styles = StyleSheet.create({
     color: colors.text,
     marginTop: 4,
   },
-  infoRow: {
-    flexDirection: 'row',
-    marginTop: 8,
-    alignItems: 'center',
-  },
+  infoRow: { flexDirection: 'row', marginTop: 8, alignItems: 'center' },
   metaBadge: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -214,9 +245,6 @@ const styles = StyleSheet.create({
     gap: 4,
     minWidth: 80,
   },
-  disabledBtn: {
-    opacity: 0.8,
-    backgroundColor: colors.textMuted,
-  },
+  disabledBtn: { opacity: 0.8, backgroundColor: colors.textMuted },
   addBtnText: { color: colors.white, fontWeight: '800', fontSize: 14 },
-})
+});

@@ -51,7 +51,7 @@ export default function LoginScreen({ navigation }) {
         onSuccess: () => setShowOtp(true),
         onError: err =>
           Alert.alert('Failed', err.message || 'Unable to send OTP'),
-      }
+      },
     );
   };
 
@@ -76,23 +76,29 @@ export default function LoginScreen({ navigation }) {
               mobile: userData.mobile,
               email: userData.email,
               profile_pic: userData.profile_pic,
-              role: userData.role,
+              referral_code: userData.referral_code, // ADDED
+              total_bookings: userData.total_bookings, // ADDED
+              role: userData.role.name, // FIXED: Accessing .name because role is an object
               is_completed_profile: userData.is_completed_profile,
               is_kyc_verified: userData.is_kyc_verified,
+              gender: userData.gender, // ADDED
             },
           });
 
           navigation.reset('MainTabs');
         },
-        onError: err =>
-          Alert.alert('Failed', err.message || 'Invalid OTP'),
-      }
+        onError: err => Alert.alert('Failed', err.message || 'Invalid OTP'),
+      },
     );
   };
 
   return (
     <View style={{ flex: 1, backgroundColor: colors.background }}>
-      <StatusBar translucent backgroundColor="transparent" barStyle="dark-content" />
+      <StatusBar
+        translucent
+        backgroundColor="transparent"
+        barStyle="dark-content"
+      />
 
       <View style={styles.blobTop} />
       <View style={styles.blobBottom} />
@@ -103,7 +109,6 @@ export default function LoginScreen({ navigation }) {
           behavior={Platform.OS === 'ios' ? 'padding' : undefined}
         >
           <View style={styles.container}>
-
             <View style={styles.brand}>
               <Text style={styles.logo}>
                 <Text style={styles.nai}>nai</Text>
@@ -162,7 +167,6 @@ export default function LoginScreen({ navigation }) {
                 New here? <Text style={styles.link}>Create account</Text>
               </Text>
             </TouchableOpacity>
-
           </View>
         </KeyboardAvoidingView>
       </SafeAreaView>
