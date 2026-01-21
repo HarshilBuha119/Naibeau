@@ -66,7 +66,13 @@ export default function LoginScreen({ navigation }) {
       { mobile, otp, fcm: '' },
       {
         onSuccess: response => {
-          const userData = response.data;
+          const userData = response.data || response;
+
+          // Add validation to prevent crashes
+          if (!userData || !userData.user_id) {
+            Alert.alert('Error', 'Invalid response from server');
+            return;
+          }
 
           signIn({
             token: userData.access_token,

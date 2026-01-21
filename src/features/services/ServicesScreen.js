@@ -3,14 +3,13 @@ import { View, Text, StyleSheet, FlatList, TextInput, StatusBar, ScrollView, Tou
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { useNavigation } from '@react-navigation/native';
-import Animated, { FadeInUp, FadeInRight, Layout } from 'react-native-reanimated';
+import Animated, { FadeInUp, LinearTransition } from 'react-native-reanimated';
 
 import PartnerCard from '../../components/PartnerCard';
 import CategoryItem from '../../components/CategoryItem';
 import { useDashboard } from '../../api/dashBoardApi';
 import colors from '../../theme/colors';
 
-// 1. Optimized Skeleton (Using simple Animated views)
 const LoadingSkeleton = React.memo(() => (
   <View style={styles.skeletonContainer}>
     {[1, 2, 3, 4].map((i) => (
@@ -22,10 +21,13 @@ const LoadingSkeleton = React.memo(() => (
     ))}
   </View>
 ));
+// ... other imports
 
 export default function ServicesScreen() {
   const navigation = useNavigation();
   const { data: dashboardData, isLoading } = useDashboard();
+  console.log(dashboardData,"dashboard");
+  
   const [search, setSearch] = useState('');
 
   const subcategories = dashboardData?.data?.subcategories ?? [];
@@ -44,49 +46,57 @@ export default function ServicesScreen() {
     });
   }, [navigation]);
 
-  // 2. Extracted Header for better performance
-  const renderHeader = () => (
-    <>
-      <Animated.View entering={FadeInUp.delay(200)} style={styles.searchWrapper}>
-        <View style={styles.searchBox}>
-          <Ionicons name="search-outline" size={20} color={colors.textMuted} />
-          <TextInput
-            placeholder="Search specialists, salons..."
-            placeholderTextColor={colors.textMuted}
-            style={styles.searchInput}
-            value={search}
-            onChangeText={setSearch}
-          />
-        </View>
-      </Animated.View>
-
-      <Text style={styles.sectionTitle}>Explore Categories</Text>
-      <ScrollView bounces={false}  horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.categoryContent}>
-        {subcategories.map((item, index) => (
-          <Animated.View key={item.category_id} entering={FadeInRight.delay(300 + (index * 100))}>
-            <CategoryItem
-              item={item}
-              isSelected={false}
-              onPress={() => navigation.navigate('CategoryServices', { 
-                categoryId: item.category_id, 
-                categoryName: item.name 
-              })}
+  // FIX: Wrap the entire header in useMemo
+  // Only re-render when 'search', 'subcategories', or 'isLoading' changes
+  const listHeader = useMemo(() => {
+    return (
+      <>
+        <Animated.View entering={FadeInUp.delay(200)} style={styles.searchWrapper}>
+          <View style={styles.searchBox}>
+            <Ionicons name="search-outline" size={20} color={colors.textMuted} />
+            <TextInput
+              placeholder="Search specialists, salons..."
+              placeholderTextColor={colors.textMuted}
+              style={styles.searchInput}
+              value={search}
+              onChangeText={setSearch} // This now won't trigger a full header unmount
+              autoCorrect={false}
             />
-          </Animated.View>
-        ))}
-      </ScrollView>
+          </View>
+        </Animated.View>
 
-      <View style={styles.sectionHeader}>
-        <Text style={styles.sectionTitle}>Top Rated Partners</Text>
-      </View>
-    </>
-  );
+        <Text style={styles.sectionTitle}>Explore Categories</Text>
+        <ScrollView 
+          horizontal 
+          showsHorizontalScrollIndicator={false} 
+          contentContainerStyle={styles.categoryContent}
+        >
+          {subcategories.map((item, index) => (
+            <View key={item.category_id}>
+              <CategoryItem
+                item={item}
+                isSelected={false}
+                onPress={() => navigation.navigate('CategoryServices', { 
+                  categoryId: item.category_id, 
+                  categoryName: item.name 
+                })}
+              />
+            </View>
+          ))}
+        </ScrollView>
+
+        <View style={styles.sectionHeader}>
+          <Text style={styles.sectionTitle}>Top Rated Partners</Text>
+        </View>
+      </>
+    );
+  }, [search, subcategories, navigation]);
 
   return (
     <SafeAreaView style={styles.safe}>
-      <StatusBar barStyle="dark-content" backgroundColor="#F8F9FB" />
+      <StatusBar barStyle="dark-content" backgroundColor="#F8F9FB" translucent/>
 
-      {/* Profile Header */}
+      {/* Static Profile Header - Stays visible when searching */}
       <View style={styles.header}>
         <Animated.View entering={FadeInUp}>
           <Text style={styles.welcomeText}>Hello, Gorgeous ✨</Text>
@@ -95,7 +105,7 @@ export default function ServicesScreen() {
             <Text style={{ color: colors.primary }}>beau</Text>
           </Text>
         </Animated.View>
-        <TouchableOpacity style={styles.profileBtn} onPress={()=>navigation.navigate("Profile")}>
+        <TouchableOpacity style={styles.profileBtn} onPress={() => navigation.navigate("Profile")}>
           <Ionicons name="person" size={20} color={colors.primary} />
         </TouchableOpacity>
       </View>
@@ -106,18 +116,19 @@ export default function ServicesScreen() {
         numColumns={2}
         renderItem={({ item, index }) => (
           <Animated.View 
-            entering={FadeInUp.delay(100 * (index % 4))} 
-            layout={Layout.springify()} // Smooth moving when filtering
+            entering={FadeInUp.delay(50 * (index % 4))} 
+            layout={LinearTransition.springify()} 
             style={{ flex: 0.5 }}
           >
             <PartnerCard item={item} onPress={handlePartnerPress} />
           </Animated.View>
         )}
-        ListHeaderComponent={renderHeader}
+        ListHeaderComponent={listHeader} // Use the memoized variable, NOT a function call
         ListEmptyComponent={isLoading ? <LoadingSkeleton /> : (
             <View style={styles.empty}><Text>No partners found</Text></View>
         )}
         contentContainerStyle={styles.list}
+        keyboardShouldPersistTaps="handled" // Essential for search UX
         showsVerticalScrollIndicator={false}
       />
     </SafeAreaView>
@@ -126,11 +137,11 @@ export default function ServicesScreen() {
 
 const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: '#F8F9FB' },
-  header: { paddingHorizontal: 20, paddingTop: 10, paddingBottom: 15, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+  header: { paddingHorizontal: 20, paddingTop: 10, paddingBottom: 15, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',backgroundColor: '#F8F9FB' },
   welcomeText: { fontSize: 13, fontWeight: '600', color: colors.textMuted },
   brand: { fontSize: 28, fontWeight: '900' },
   profileBtn: { width: 45, height: 45, borderRadius: 15, backgroundColor: '#FFF', justifyContent: 'center', alignItems: 'center', elevation: 2 },
-  searchWrapper: { paddingHorizontal: 20, marginBottom: 10 },
+  searchWrapper: { paddingHorizontal: 20, marginVertical: 10 },
   searchBox: { backgroundColor: '#FFF', borderRadius: 18, paddingLeft: 15, height: 56, flexDirection: 'row', alignItems: 'center', elevation: 4 },
   searchInput: { flex: 1, fontSize: 15, marginLeft: 10, color: '#1A1D1E' },
   sectionHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },

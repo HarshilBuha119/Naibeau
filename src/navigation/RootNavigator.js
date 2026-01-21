@@ -6,6 +6,7 @@ import MainTabs from './MainTabs';
 import SplashScreen from '../components/SplashScreen';
 import PartnerServicesScreen from '../features/services/PartnerServicesScreen';
 import CategoryServicesScreen from '../features/services/CategoryServicesScreen';
+import PaymentScreen from '../features/cart/PaymentScreen';
 const Stack = createNativeStackNavigator();
 
 export default function RootNavigator() {
@@ -35,6 +36,11 @@ export default function RootNavigator() {
           <Stack.Screen
             name="CategoryServices"
             component={CategoryServicesScreen}
+            options={{ title: 'Category' }}
+          />
+          <Stack.Screen
+            name="Payment"
+            component={PaymentScreen}
             options={{ title: 'Category' }}
           />
         </>

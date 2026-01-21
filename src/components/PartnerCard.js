@@ -44,7 +44,7 @@ export default function PartnerCard({ item, onPress }) {
 
 const styles = StyleSheet.create({
   card: { flex: 0.5, backgroundColor: '#FFF', borderRadius: 24, margin: 8, padding: 8, elevation: 5, shadowColor: '#000', shadowOpacity: 0.05, shadowRadius: 10 },
-  imageContainer: { height: 130, borderRadius: 18, overflow: 'hidden', position: 'relative' },
+  imageContainer: { height: 180, borderRadius: 18, overflow: 'hidden', position: 'relative' },
   image: { width: '100%', height: '100%' },
   glassRating: { position: 'absolute', bottom: 6, right: 6, backgroundColor: 'rgba(255,255,255,0.9)', paddingHorizontal: 6, paddingVertical: 3, borderRadius: 8, flexDirection: 'row', alignItems: 'center', gap: 3 },
   ratingText: { fontSize: 10, fontWeight: '900', color: '#000' },

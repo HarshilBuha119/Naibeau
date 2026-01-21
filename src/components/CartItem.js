@@ -20,14 +20,14 @@ const CartItem = ({ item, onRemove }) => {
   return (
     <View style={itemStyles.container}>
       {/* Service Image */}
-      <Image source={{ uri: serviceImage }} style={itemStyles.image} resizeMode='cover'/>
-      
+      <Image source={{ uri: serviceImage }} style={itemStyles.image} resizeMode='center' progressiveRenderingEnabled={true} />
+
       <View style={itemStyles.content}>
         <View style={itemStyles.headerRow}>
           <Text style={itemStyles.title} numberOfLines={1}>
             {serviceName}
           </Text>
-          
+
           {/* Delete Button */}
           <TouchableOpacity onPress={() => onRemove(item.cart_id)}>
             <Ionicons name="trash-outline" size={18} color="#FF3B30" />
@@ -38,12 +38,23 @@ const CartItem = ({ item, onRemove }) => {
         <Text style={itemStyles.productName} numberOfLines={1}>
           {productName}
         </Text>
-
+        <View style={itemStyles.infoRow}>
+          <View style={itemStyles.metaBadge}>
+            <Ionicons name="time-outline" size={12} color={colors.textMuted} />
+            <Text style={itemStyles.metaText}>{item.duration || '15 min'}</Text>
+          </View>
+          <View style={[itemStyles.metaBadge, { marginLeft: 8 }]}>
+            <Ionicons name="shield-checkmark-outline" size={12} color={colors.primary} />
+            <Text style={itemStyles.metaText} numberOfLines={2}>
+              {item.partner_name || 'Professional'}
+            </Text>
+          </View>
+        </View>
         <View style={itemStyles.footer}>
           <View style={itemStyles.priceContainer}>
             <Text style={itemStyles.price}>₹{price}</Text>
             {oldPrice && oldPrice !== price && (
-               <Text style={itemStyles.oldPrice}>₹{oldPrice}</Text>
+              <Text style={itemStyles.oldPrice}>₹{oldPrice}</Text>
             )}
           </View>
 
@@ -59,35 +70,46 @@ const CartItem = ({ item, onRemove }) => {
 export default CartItem;
 
 const itemStyles = StyleSheet.create({
-  container: { 
-    backgroundColor: '#FFF', 
-    borderRadius: 20, 
-    padding: 12, 
-    flexDirection: 'row', 
-    marginBottom: 12, 
-    elevation: 2, 
-    shadowColor: '#000', 
-    shadowOpacity: 0.05, 
-    shadowRadius: 10 
+  container: {
+    backgroundColor: '#FFF',
+    borderRadius: 20,
+    padding: 12,
+    flexDirection: 'row',
+    marginBottom: 12,
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOpacity: 0.05,
+    shadowRadius: 10
   },
-  image: { width: 80, height: 80, borderRadius: 15, backgroundColor: '#F1F5F9' },
+  image: { width: 100, height: 100, borderRadius: 15, backgroundColor: '#F1F5F9' },
   content: { flex: 1, marginLeft: 15, justifyContent: 'center' },
   headerRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   title: { fontSize: 15, fontWeight: '800', color: colors.text, flex: 1 },
   productName: { fontSize: 12, color: colors.textMuted, marginTop: 2 },
-  footer: { 
-    flexDirection: 'row', 
-    justifyContent: 'space-between', 
-    alignItems: 'center', 
-    marginTop: 10 
+  infoRow: { flexDirection: 'row', marginTop: 8, alignItems: 'center' },
+  metaBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    backgroundColor: '#F8F9FB',
+    paddingHorizontal: 6,
+    paddingVertical: 3,
+    borderRadius: 6,
+  },
+  metaText: { fontSize: 11, color: colors.textMuted, fontWeight: '600' },
+  footer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginTop: 10
   },
   priceContainer: { flexDirection: 'row', alignItems: 'center' },
   price: { fontSize: 16, fontWeight: '900', color: colors.primary },
-  oldPrice: { 
-    fontSize: 12, 
-    color: colors.textMuted, 
-    textDecorationLine: 'line-through', 
-    marginLeft: 6 
+  oldPrice: {
+    fontSize: 12,
+    color: colors.textMuted,
+    textDecorationLine: 'line-through',
+    marginLeft: 6
   },
   qtyBadge: { backgroundColor: '#F1F5F9', paddingHorizontal: 10, paddingVertical: 4, borderRadius: 8 },
   qtyText: { fontSize: 12, fontWeight: '700', color: colors.text },

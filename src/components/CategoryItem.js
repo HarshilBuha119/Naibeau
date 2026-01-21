@@ -19,7 +19,7 @@ export default function CategoryItem({ item, isSelected, onPress }) {
           <Image
             source={{ uri: item.image }}
             style={styles.image}
-            resizeMode="cover"
+            resizeMode="stretch"
           />
         ) : (
           <View style={styles.placeholder}>
@@ -51,12 +51,10 @@ const styles = StyleSheet.create({
   },
 
   imageWrapper: {
-    padding: 3,
     borderRadius: 999,
-    borderWidth: 2,
-    borderColor: 'transparent',
+    borderWidth: 1,
     marginBottom: 6,
-    flexShrink: 0,            
+    flexShrink: 0,    
   },
 
   imageWrapperSelected: {

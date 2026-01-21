@@ -113,7 +113,7 @@ export default function ServiceCard({ item }) {
             </View>
             <View style={[styles.metaBadge, { marginLeft: 8 }]}>
               <Ionicons name="shield-checkmark-outline" size={12} color={colors.primary} />
-              <Text style={styles.metaText} numberOfLines={1}>
+              <Text style={styles.metaText} numberOfLines={2}>
                 {partner?.name || item.partner_name || 'Professional'}
               </Text>
             </View>
@@ -221,8 +221,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 6,
     paddingVertical: 3,
     borderRadius: 6,
+    maxWidth:"50%"
   },
-  metaText: { fontSize: 11, color: colors.textMuted, fontWeight: '600' },
+  metaText: { fontSize: 11, color: colors.textMuted, fontWeight: '600'},
   footer: {
     flexDirection: 'row',
     justifyContent: 'space-between',

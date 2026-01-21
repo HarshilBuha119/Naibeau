@@ -11,10 +11,14 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { useRemoveFromCart, useCart } from '../../api/cartApi';
 import CartItem from '../../components/CartItem';
+import { useNavigation } from '@react-navigation/native';
 
 export default function CartScreen() {
   const { data: response, isLoading, isError, refetch } = useCart();
   const { mutate: removeItem } = useRemoveFromCart();
+  console.log(response, "cart");
+  const navigation = useNavigation()
+
 
   // 1. DATA MAPPING: Extracting from the nested response.data structure
   const cartItems = response?.data?.dataCart || [];
@@ -128,9 +132,7 @@ export default function CartScreen() {
           <TouchableOpacity
             style={styles.checkoutBtn}
             activeOpacity={0.8}
-            onPress={() => {
-              /* Navigate to Checkout */
-            }}
+            onPress={() => navigation.navigate("Payment")}
           >
             <Text style={styles.checkoutText}>Checkout</Text>
             <Ionicons name="arrow-forward" size={18} color="#FFF" />
@@ -191,10 +193,10 @@ const styles = StyleSheet.create({
   totalValue: { fontSize: 18, fontWeight: '900', color: '#4F46E5' },
   bottomBar: {
     position: 'absolute',
-    bottom: 0,
+    bottom: 64,
     left: 0,
     right: 0,
-    backgroundColor: '#FFF',
+    backgroundColor: '#ffffff',
     paddingHorizontal: 25,
     paddingVertical: 20,
     flexDirection: 'row',
@@ -202,10 +204,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderTopLeftRadius: 30,
     borderTopRightRadius: 30,
-    elevation: 20,
-    shadowColor: '#000',
-    shadowOpacity: 0.1,
-    shadowRadius: 20,
   },
   bottomPriceLabel: { fontSize: 12, color: '#64748B', fontWeight: '600' },
   bottomPriceValue: { fontSize: 20, fontWeight: '900', color: '#1A1D1E' },
