@@ -21,6 +21,8 @@ export default function ProfileScreen() {
   const { user, signOut } = useContext(AuthContext);
   const [modalVisible, setModalVisible] = useState(false);
 
+  console.log(user);
+  
   const handleLogout = () => {
     setModalVisible(true);
   };
@@ -80,8 +82,8 @@ export default function ProfileScreen() {
           {/* STATS ROW */}
           <View style={styles.statsRow}>
             <View style={styles.statBox}>
-              <Text style={styles.statNumber}>{user?.total_bookings || 0}</Text>
-              <Text style={styles.statLabel}>Bookings</Text>
+              <Text style={styles.statNumber}>{user?.role}</Text>
+              <Text style={styles.statLabel}>Role</Text>
             </View>
             <View style={[styles.statBox, styles.statBorder]}>
               {user?.is_kyc_verified ? (
@@ -169,6 +171,7 @@ const styles = StyleSheet.create({
     shadowRadius: 15,
     shadowOffset: { width: 0, height: 10 },
     zIndex: 10,
+    paddingTop:30
   },
   // ... (keep the rest of your styles exactly as they are)
   avatarWrapper: { position: 'relative', marginBottom: 15 },

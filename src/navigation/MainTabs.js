@@ -43,7 +43,7 @@ export default function MainTabs() {
       screenOptions={{
         headerShown: false,
         tabBarActiveTintColor: '#FFFFFF',
-        tabBarInactiveTintColor: '#94A3B8',
+        tabBarInactiveTintColor: 'black',
         tabBarActiveBackgroundColor: colors.primary,
         tabBarHideOnKeyboard: true,
       }}
@@ -92,11 +92,10 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
-    shadowColor: '#000',
+    shadowColor: '#FFF',
     shadowOffset: { width: 0, height: -2 },
-    shadowOpacity: 0.1,
     shadowRadius: 10,
-    elevation: 5,
+    elevation: 0,
   },
   fabShadow: {
     backgroundColor: colors.primary, // The FAB color
