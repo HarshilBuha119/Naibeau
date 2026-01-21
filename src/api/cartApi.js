@@ -5,10 +5,10 @@ const getCartApi = () =>
   apiClient.get('/customer/cart/list').then(res => res.data);
 
 const addToCartApi = payload =>
-  apiClient1 // Ensure this is apiClient1 for v2
+  apiClient1 
     .post('/customer/add/cart', payload)
     .then(res => {
-      console.log('Raw V2 Response:', res.data); // Debug here
+      console.log('Raw V2 Response:', res.data);
       return res.data;
     })
     .catch(err => {

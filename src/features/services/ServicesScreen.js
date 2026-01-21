@@ -21,7 +21,6 @@ const LoadingSkeleton = React.memo(() => (
     ))}
   </View>
 ));
-// ... other imports
 
 export default function ServicesScreen() {
   const navigation = useNavigation();
@@ -46,8 +45,6 @@ export default function ServicesScreen() {
     });
   }, [navigation]);
 
-  // FIX: Wrap the entire header in useMemo
-  // Only re-render when 'search', 'subcategories', or 'isLoading' changes
   const listHeader = useMemo(() => {
     return (
       <>
@@ -59,7 +56,7 @@ export default function ServicesScreen() {
               placeholderTextColor={colors.textMuted}
               style={styles.searchInput}
               value={search}
-              onChangeText={setSearch} // This now won't trigger a full header unmount
+              onChangeText={setSearch} 
               autoCorrect={false}
             />
           </View>
@@ -123,12 +120,12 @@ export default function ServicesScreen() {
             <PartnerCard item={item} onPress={handlePartnerPress} />
           </Animated.View>
         )}
-        ListHeaderComponent={listHeader} // Use the memoized variable, NOT a function call
+        ListHeaderComponent={listHeader} 
         ListEmptyComponent={isLoading ? <LoadingSkeleton /> : (
             <View style={styles.empty}><Text>No partners found</Text></View>
         )}
         contentContainerStyle={styles.list}
-        keyboardShouldPersistTaps="handled" // Essential for search UX
+        keyboardShouldPersistTaps="handled" 
         showsVerticalScrollIndicator={false}
       />
     </SafeAreaView>

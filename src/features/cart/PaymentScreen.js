@@ -11,8 +11,7 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import colors from "../../theme/colors"; // Using your project's color file
-import { useCart } from '../api/cartApi'; // Updated to use your project's API hook if needed
+import colors from "../../theme/colors"; 
 
 export default function PaymentScreen({ navigation }) {
     const [name, setName] = useState("");
@@ -26,9 +25,7 @@ export default function PaymentScreen({ navigation }) {
             return;
         }
 
-        // Simulating order placement
         try {
-            // Replace this with your actual placeOrder logic
             const success = true; 
 
             if (success) {
@@ -184,7 +181,7 @@ const styles = StyleSheet.create({
     },
     methodBtnActive: {
         borderColor: colors.primary,
-        backgroundColor: colors.primary + '10', // 10% opacity
+        backgroundColor: colors.primary + '10', 
     },
     methodText: { color: colors.textMuted, fontSize: 14, fontWeight: '600' },
     methodTextActive: { color: colors.primary, fontWeight: "800" },
@@ -197,7 +194,7 @@ const styles = StyleSheet.create({
         elevation: 20,
     },
     payBtn: {
-        backgroundColor: '#1A1D1E', // Matching your project's dark theme button
+        backgroundColor: '#1A1D1E', 
         paddingVertical: 18,
         borderRadius: 20,
         flexDirection: 'row',

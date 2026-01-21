@@ -69,7 +69,7 @@ const styles = StyleSheet.create({
     },
     backdrop: {
         ...StyleSheet.absoluteFillObject,
-        backgroundColor: 'rgba(26, 29, 30, 0.7)', // Deep charcoal translucent
+        backgroundColor: 'rgba(26, 29, 30, 0.7)', 
     },
     modalCard: {
         width: width,

@@ -8,7 +8,7 @@ import {
   ScrollView,
   Alert,
   StatusBar,
-  Share, // Import Share
+  Share,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -52,23 +52,19 @@ export default function ProfileScreen() {
   );
 
   return (
-    // FIX: added edges to prevent the top gap shadow issue
     <SafeAreaView style={styles.safe} edges={['left', 'right', 'bottom']}>
       <StatusBar backgroundColor={'#FFF'} barStyle="dark-content" />
 
-      {/* ScrollView now starts from the very top of the screen */}
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
       >
-        {/* HEADER SECTION */}
         <Animated.View entering={FadeInUp.duration(600)} style={styles.profileHeader}>
-          {/* Added extra top padding for devices with notches since we removed SafeArea top edge */}
           <View style={{ height: 40 }} />
 
           <Animated.View entering={ZoomIn.delay(300)} style={styles.avatarWrapper}>
             <Image
-              source={{ uri: user?.profile_pic || 'https://via.placeholder.com/110' }}
+              source={{ uri: user?.profile_pic || 'https://play-lh.googleusercontent.com/NgXxhCeJtedFTCiK24tfRXbJQhdMBWFymWiUCFSoq2j3Xom0AAaqmdTVHaRUcHlgGd7TBvdXgLn_jhpJK-ktkA=w240-h480-rw' }}
               style={styles.avatar}
             />
             <TouchableOpacity style={styles.editBadge}>
@@ -115,7 +111,7 @@ export default function ProfileScreen() {
           <Text style={styles.sectionLabel}>Refer & Earn</Text>
           <TouchableOpacity
             style={styles.referralCard}
-            onPress={onShare} // Click the card to share
+            onPress={onShare} 
             activeOpacity={0.8}
           >
             <View>
@@ -161,11 +157,11 @@ const styles = StyleSheet.create({
   },
   profileHeader: {
     alignItems: 'center',
-    paddingBottom: 30, // Removed top padding here to handle manually
+    paddingBottom: 30, 
     backgroundColor: '#FFF',
     borderBottomLeftRadius: 40,
     borderBottomRightRadius: 40,
-    elevation: 8, // Slightly higher elevation for "Mind Blowing" feel
+    elevation: 8,
     shadowColor: '#000',
     shadowOpacity: 0.1,
     shadowRadius: 15,
@@ -173,7 +169,6 @@ const styles = StyleSheet.create({
     zIndex: 10,
     paddingTop:30
   },
-  // ... (keep the rest of your styles exactly as they are)
   avatarWrapper: { position: 'relative', marginBottom: 15 },
   avatar: { width: 110, height: 110, borderRadius: 55, backgroundColor: '#F1F5F9' },
   editBadge: { position: 'absolute', bottom: 5, right: 5, backgroundColor: colors.primary, width: 32, height: 32, borderRadius: 16, justifyContent: 'center', alignItems: 'center', borderWidth: 3, borderColor: '#FFF' },

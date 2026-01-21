@@ -10,12 +10,10 @@ import colors from '../theme/colors';
 
 const Tab = createBottomTabNavigator();
 
-// HELPER: Fixed visibility logic
 const tabBarIcon = (name) => ({ focused }) => (
   <Icon
     name={name}
     size={26}
-    // Active icons are white (inside the bubble), inactive are muted gray
     color={focused ? '#FFFFFF' : '#94A3B8'}
   />
 );
@@ -23,7 +21,6 @@ const tabBarIcon = (name) => ({ focused }) => (
 export default function MainTabs() {
   const [isKeyboardVisible, setKeyboardVisible] = useState(false);
   useEffect(() => {
-    // Listeners for Keyboard
     const showSubscription = Keyboard.addListener(
       Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow',
       () => setKeyboardVisible(true)
@@ -48,7 +45,6 @@ export default function MainTabs() {
         tabBarHideOnKeyboard: true,
       }}
       tabBar={(props) => {
-        // If keyboard is up, return null so the bar is completely removed
         if (isKeyboardVisible) return null;
 
         return (
@@ -98,7 +94,7 @@ const styles = StyleSheet.create({
     elevation: 0,
   },
   fabShadow: {
-    backgroundColor: colors.primary, // The FAB color
+    backgroundColor: colors.primary, 
     shadowColor: colors.primary,
     shadowOffset: {
       width: 0,

@@ -19,12 +19,9 @@ export default function CartScreen() {
   console.log(response, "cart");
   const navigation = useNavigation()
 
-
-  // 1. DATA MAPPING: Extracting from the nested response.data structure
   const cartItems = response?.data?.dataCart || [];
   const masterCart = response?.data?.masterCart || {};
 
-  // 2. VALUES: Using real keys from your JSON log
   const subTotal = masterCart?.service_sub_total || '0.00';
   const finalTotal = masterCart?.final_total || '0.00';
   const convenienceFee = masterCart?.transportation_charge || '0.00';

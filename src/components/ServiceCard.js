@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -14,14 +14,13 @@ import colors from '../theme/colors';
 import { useAddToCart, useCart } from '../api/cartApi';
 
 export default function ServiceCard({ item }) {
-  // Destructure with fallbacks for flat or nested data
   const { service, partner, final_price, price, off, avg_service_rating } = item;
-
-  // Hooks
-  const { data: cartResponse } = useCart(); // Get current cart state
+  
+  const [imgLoading, setImgLoading] = useState(true);
+  
+  const { data: cartResponse } = useCart();
   const { mutate: addToCart, isPending } = useAddToCart();
 
-  // 1. Data Mapping: Ensure we have a valid ID and Title regardless of API structure
   const currentServiceId = service?.service_id || item.service_id || item.id;
   const displayTitle = service?.name || item.service_name || item.name;
   const displayCategory = service?.category?.name || item.category_name || 'SERVICE';
@@ -35,14 +34,12 @@ export default function ServiceCard({ item }) {
   const rating = Number(avg_service_rating || item.rating || 0).toFixed(1);
   const hasDiscount = Number(off) > 0;
 
-  /* -------- ADD TO CART LOGIC -------- */
   const handleAddToCart = () => {
     if (!currentServiceId) {
       Alert.alert('Error', 'Service ID not found');
       return;
     }
 
-    // 2. LOGIC: Check if item already exists in the current cart
     const existingItems = cartResponse?.data?.dataCart || [];
     const isAlreadyInCart = existingItems.some(
       cartItem => cartItem.service_id === currentServiceId
@@ -53,27 +50,21 @@ export default function ServiceCard({ item }) {
       return;
     }
 
-    // 3. LOGIC: Handle is_replace (Replacement logic)
-    // If cart has a different partner_id than the current service's partner
     const cartPartnerId = cartResponse?.data?.masterCart?.partner_id;
     const currentPartnerId = partner?.user_id || item.partner_id;
 
-    // If cart is NOT empty AND the partner is different, we must replace
     const shouldReplace = cartPartnerId && currentPartnerId && cartPartnerId !== currentPartnerId;
 
     const payload = {
-      is_replace: !!shouldReplace, 
+      is_replace: true, 
       service_id: currentServiceId,
     };
 
     addToCart(payload, {
       onSuccess: data => {
         Alert.alert('Success', 'Added to cart successfully!');
-        console.log('Successfully added:', data);
       },
       onError: error => {
-        console.error('Error Status:', error.response?.status);
-        console.error('Error Body:', error.response?.data);
         Alert.alert(
           'Cart Error',
           error.response?.data?.message || 'Unable to add item to cart'
@@ -84,9 +75,20 @@ export default function ServiceCard({ item }) {
 
   return (
     <TouchableOpacity activeOpacity={0.9} style={styles.card}>
-      {/* LEFT: Image Section */}
       <View style={styles.imageContainer}>
-        <Image source={{ uri: image }} style={styles.image} />
+        {/* Placeholder Loader */}
+        {imgLoading && (
+          <View style={styles.imgLoader}>
+            <ActivityIndicator size="small" color={colors.primary} />
+          </View>
+        )}
+
+        <Image 
+          source={{ uri: image }} 
+          style={styles.image} 
+          onLoadEnd={() => setImgLoading(false)}
+        />
+
         {hasDiscount && (
           <View style={styles.discountBadge}>
             <Text style={styles.discountLabel}>{off}% OFF</Text>
@@ -98,7 +100,6 @@ export default function ServiceCard({ item }) {
         </View>
       </View>
 
-      {/* RIGHT: Content Section */}
       <View style={styles.rightContent}>
         <View>
           <Text style={styles.categoryText}>{displayCategory.toUpperCase()}</Text>
@@ -113,8 +114,8 @@ export default function ServiceCard({ item }) {
             </View>
             <View style={[styles.metaBadge, { marginLeft: 8 }]}>
               <Ionicons name="shield-checkmark-outline" size={12} color={colors.primary} />
-              <Text style={styles.metaText} numberOfLines={2}>
-                {partner?.name || item.partner_name || 'Professional'}
+              <Text style={styles.metaText} numberOfLines={1}>
+                {partner?.name || item.partner_name || 'Pro'}
               </Text>
             </View>
           </View>
@@ -164,12 +165,22 @@ const styles = StyleSheet.create({
       android: { elevation: 4 },
     }),
   },
-  imageContainer: { position: 'relative' },
+  imageContainer: { 
+    position: 'relative',
+    backgroundColor: '#F3F4F6',
+    borderRadius: 20,
+    overflow: 'hidden'
+  },
+  imgLoader: {
+    ...StyleSheet.absoluteFillObject,
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 1
+  },
   image: {
     width: 115,
     height: 140,
     borderRadius: 20,
-    backgroundColor: '#F3F4F6',
   },
   discountBadge: {
     position: 'absolute',
@@ -179,6 +190,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 10,
+    zIndex: 2
   },
   discountLabel: { color: colors.white, fontSize: 10, fontWeight: '900' },
   ratingBadge: {
@@ -192,6 +204,7 @@ const styles = StyleSheet.create({
     paddingVertical: 3,
     borderRadius: 8,
     gap: 3,
+    zIndex: 2
   },
   ratingText: { fontSize: 11, fontWeight: 'bold', color: '#000' },
   rightContent: {

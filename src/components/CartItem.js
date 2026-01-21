@@ -1,26 +1,35 @@
-import React from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, Image, TouchableOpacity, ActivityIndicator } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import colors from '../theme/colors';
 
 const CartItem = ({ item, onRemove }) => {
-  // 1. Correct Mapping based on your console log
-  // service object contains: name, image
-  // final_amount contains the price
-  // ProductsRates[0] contains the product details
+  const [imgLoading, setImgLoading] = useState(true);
+
   const serviceName = item.service?.name || 'Service';
   const serviceImage = item.service?.image || 'https://via.placeholder.com/150';
   const price = item.final_amount || '0';
   const oldPrice = item.original_amount;
   const qty = item.qty || 1;
 
-  // Grab the product name from ProductsRates if available
   const productName = item.ProductsRates?.[0]?.name || "Standard Package";
 
   return (
     <View style={itemStyles.container}>
-      {/* Service Image */}
-      <Image source={{ uri: serviceImage }} style={itemStyles.image} resizeMode='center' progressiveRenderingEnabled={true} />
+      {/* IMAGE SECTION WITH LOADER */}
+      <View style={itemStyles.imageWrapper}>
+        {imgLoading && (
+          <View style={itemStyles.loaderContainer}>
+            <ActivityIndicator size="small" color={colors.primary} />
+          </View>
+        )}
+        <Image 
+          source={{ uri: serviceImage }} 
+          style={itemStyles.image} 
+          resizeMode='cover' 
+          onLoadEnd={() => setImgLoading(false)}
+        />
+      </View>
 
       <View style={itemStyles.content}>
         <View style={itemStyles.headerRow}>
@@ -28,16 +37,18 @@ const CartItem = ({ item, onRemove }) => {
             {serviceName}
           </Text>
 
-          {/* Delete Button */}
-          <TouchableOpacity onPress={() => onRemove(item.cart_id)}>
+          <TouchableOpacity 
+            onPress={() => onRemove(item.cart_id)}
+            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }} // Easier to click
+          >
             <Ionicons name="trash-outline" size={18} color="#FF3B30" />
           </TouchableOpacity>
         </View>
 
-        {/* Product Name (e.g. RICA Wax, etc) */}
         <Text style={itemStyles.productName} numberOfLines={1}>
           {productName}
         </Text>
+
         <View style={itemStyles.infoRow}>
           <View style={itemStyles.metaBadge}>
             <Ionicons name="time-outline" size={12} color={colors.textMuted} />
@@ -45,11 +56,12 @@ const CartItem = ({ item, onRemove }) => {
           </View>
           <View style={[itemStyles.metaBadge, { marginLeft: 8 }]}>
             <Ionicons name="shield-checkmark-outline" size={12} color={colors.primary} />
-            <Text style={itemStyles.metaText} numberOfLines={2}>
+            <Text style={itemStyles.metaText} numberOfLines={1}>
               {item.partner_name || 'Professional'}
             </Text>
           </View>
         </View>
+
         <View style={itemStyles.footer}>
           <View style={itemStyles.priceContainer}>
             <Text style={itemStyles.price}>₹{price}</Text>
@@ -81,7 +93,24 @@ const itemStyles = StyleSheet.create({
     shadowOpacity: 0.05,
     shadowRadius: 10
   },
-  image: { width: 100, height: 100, borderRadius: 15, backgroundColor: '#F1F5F9' },
+  imageWrapper: {
+    width: 100,
+    height: 100,
+    borderRadius: 15,
+    backgroundColor: '#F1F5F9',
+    overflow: 'hidden',
+    position: 'relative',
+  },
+  loaderContainer: {
+    ...StyleSheet.absoluteFillObject,
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 1,
+  },
+  image: { 
+    width: '100%', 
+    height: '100%', 
+  },
   content: { flex: 1, marginLeft: 15, justifyContent: 'center' },
   headerRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   title: { fontSize: 15, fontWeight: '800', color: colors.text, flex: 1 },

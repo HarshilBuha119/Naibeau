@@ -1,8 +1,10 @@
-import React from 'react';
-import { Text, StyleSheet, TouchableOpacity, View, Image } from 'react-native';
+import React, { useState } from 'react';
+import { Text, StyleSheet, TouchableOpacity, View, Image, ActivityIndicator } from 'react-native';
 import colors from '../theme/colors';
 
 export default function CategoryItem({ item, isSelected, onPress }) {
+  const [loading, setLoading] = useState(true);
+
   return (
     <TouchableOpacity
       style={styles.container}
@@ -16,11 +18,20 @@ export default function CategoryItem({ item, isSelected, onPress }) {
         ]}
       >
         {item.image ? (
-          <Image
-            source={{ uri: item.image }}
-            style={styles.image}
-            resizeMode="stretch"
-          />
+          <View>
+            {loading && (
+              <View style={styles.loaderOverlay}>
+                <ActivityIndicator size="small" color={colors.primary} />
+              </View>
+            )}
+
+            <Image
+              source={{ uri: item.image }}
+              style={styles.image}
+              resizeMode="cover" 
+              onLoadEnd={() => setLoading(false)} 
+            />
+          </View>
         ) : (
           <View style={styles.placeholder}>
             <Text style={styles.placeholderText}>
@@ -40,33 +51,38 @@ export default function CategoryItem({ item, isSelected, onPress }) {
   );
 }
 
-
 const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
     paddingHorizontal: 8,
     width: 90,
-    minHeight: 120,            
+    minHeight: 120,
     justifyContent: 'flex-start',
   },
-
   imageWrapper: {
     borderRadius: 999,
-    borderWidth: 1,
+    borderWidth: 2, 
+    borderColor: 'transparent', 
     marginBottom: 6,
-    flexShrink: 0,    
+    overflow: 'hidden',
   },
-
   imageWrapperSelected: {
     borderColor: colors.primary,
   },
-
   image: {
     width: 65,
     height: 65,
     borderRadius: 999,
+    backgroundColor: '#F3F4F6',
   },
-
+  loaderOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: '#F3F4F6',
+    borderRadius: 999,
+    alignItems: 'center',
+    justifyContent: 'center',
+    zIndex: 1,
+  },
   placeholder: {
     width: 65,
     height: 65,
@@ -75,15 +91,18 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-
+  placeholderText: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: colors.primary,
+  },
   text: {
     fontSize: 13,
     fontWeight: '600',
     color: colors.textMuted,
     textAlign: 'center',
-    lineHeight: 16,      
+    lineHeight: 16,
   },
-
   textSelected: {
     color: colors.text,
     fontWeight: '800',

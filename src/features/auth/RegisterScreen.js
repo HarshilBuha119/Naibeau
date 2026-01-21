@@ -87,12 +87,12 @@ export default function RegisterScreen({ navigation }) {
               mobile: userData.mobile,
               email: userData.email,
               profile_pic: userData.profile_pic,
-              referral_code: userData.referral_code, // ADDED
-              total_bookings: userData.total_bookings, // ADDED
-              role: userData.role.name, // FIXED: Accessing .name because role is an object
+              referral_code: userData.referral_code, 
+              total_bookings: userData.total_bookings, 
+              role: userData.role.name, 
               is_completed_profile: userData.is_completed_profile,
               is_kyc_verified: userData.is_kyc_verified,
-              gender: userData.gender, // ADDED
+              gender: userData.gender, 
             },
           });
 
